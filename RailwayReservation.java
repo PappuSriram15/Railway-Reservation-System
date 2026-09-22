@@ -22,6 +22,16 @@ class Train{
         this.distance = distance;
         this.availableSeats = availableSeats;
     }
+    public void displayTrainDetails()
+    {
+        System.out.println("Train Number: " +trainNumber);
+        System.out.println("Train Name: " +trainName);
+        System.out.println("Source: " + source);
+        System.out.println("Destination: " +destination);
+        System.out.println("Departure: " +departureTime);
+        System.out.println("Distance: " +distance + " km");
+        System.out.println("Available Seats: " +availableSeats);
+    }
 }
 
 class Passenger{
@@ -35,6 +45,12 @@ class Passenger{
         this.passengerName = passengerName;
         this.passengerAge = passengerAge;
         this.passengerId = passengerId;
+    }
+    public void displayPassengerDetails()
+    {
+        System.out.println("Passenger's Name : "+passengerName);
+        System.out.println("Passenger's Age: "+passengerAge);
+        System.out.println("Passenger's Id: "+passengerId);
     }
 }
 
@@ -59,7 +75,8 @@ abstract class Ticket{
         this.status = status;
     }
 
-    abstract void calculateFare();
+    abstract public void calculateFare();
+    abstract public void displayTicketDetails();
 }
 class GeneralTicket extends Ticket {
 
@@ -70,9 +87,17 @@ class GeneralTicket extends Ticket {
         this.generalRate = generalRate;
     }
     @Override
-    void calculateFare() 
+    public void calculateFare() 
     {
         fare = train.distance * generalRate;
+    }
+    @Override 
+    public void displayTicketDetails()
+    {
+        System.out.println("PNR : "+pnr);
+        System.out.println("Seat : "+seat);
+        System.out.println("Fare : "+fare);
+        System.out.println("Status : "+status);
     }
 }
 class SleeperTicket extends Ticket {
@@ -85,9 +110,17 @@ class SleeperTicket extends Ticket {
     }
 
     @Override
-    void calculateFare() 
+    public void calculateFare() 
     {
         fare = train.distance * sleeperRate;
+    }
+    @Override 
+    public void displayTicketDetails()
+    {
+        System.out.println("PNR : "+pnr);
+        System.out.println("Seat : "+seat);
+        System.out.println("Fare : "+fare);
+        System.out.println("Status : "+status);
     }
 }
 
@@ -101,9 +134,17 @@ class ACTicket extends Ticket {
     }
 
     @Override
-    void calculateFare() 
+    public void calculateFare() 
     {
         fare = train.distance * acRate;
+    }
+    @Override 
+    public void displayTicketDetails()
+    {
+        System.out.println("PNR : "+pnr);
+        System.out.println("Seat : "+seat);
+        System.out.println("Fare : "+fare);
+        System.out.println("Status : "+status);
     }
 }
 
@@ -139,19 +180,64 @@ public class RailwayReservation{
                 if (train.source.equalsIgnoreCase(userSource) &&
                         train.destination.equalsIgnoreCase(userDestination)) {
                     
-                    System.out.println("\nTrain found!: ");
-                    System.out.println("Train Number: " + train.trainNumber);
-                    System.out.println("Train Name: " + train.trainName);
-                    System.out.println("Source: " + train.source);
-                    System.out.println("Destination: " + train.destination);
-                    System.out.println("Departure: " + train.departureTime);
-                    System.out.println("Distance: " + train.distance + " km");
-                    System.out.println("Available Seats: " + train.availableSeats);
+                    train.displayTrainDetails();
                     found = true;
                 }
             }
             if (!found)
                 System.out.println("\nNo trains available for this route.");
+            if(found)
+            {
+                System.out.print("Enter the Number : ");
+                int n = sc.nextInt();
+                for(Train train : trains)
+                {
+                    if(train.trainNumber == n)
+                    {
+                        System.out.print("Enter the Passenger Name : ");
+                        String name = sc.next();
+                        System.out.print("Enter the Passenger Age : ");
+                        int age = sc.nextInt();
+                        System.out.print("Enter the Passenger Id : ");
+                        String id = sc.next();
+
+                        Passenger p = new Passenger(name,age,id);
+                        System.out.println("1. General Class");
+                        System.out.println("2. Sleeper Class");
+                        System.out.println("3. AC Class");
+                        System.out.println("Enter the Ticket class : ");
+                        int ch = sc.nextInt();
+                        
+                        Ticket ticket = null;
+
+                        switch(ch)
+                        {
+                            case 1 -> {
+                                ticket = new GeneralTicket("TEMP", p, train, "G1", 1.0, "CONFIRMED");
+                            }
+                            case 2 -> {
+                                ticket = new SleeperTicket("TEMP", p, train, "S1", 1.5, "CONFIRMED");
+                            }
+                            case 3 -> {
+                                ticket = new ACTicket("TEMP", p, train, "A1", 2.5, "CONFIRMED");
+                            }
+                            default -> {
+                                System.out.println("Invalid ticket class.");
+                            }
+                        }
+
+                        if(ticket != null)
+                        {
+                            ticket.calculateFare();
+                            System.out.println("----- TICKET DETAILS -----");
+                            p.displayPassengerDetails();
+                            train.displayTrainDetails();
+                            System.out.println("Ticket Class: " + ticket.ticketClass);
+                            ticket.displayTicketDetails();
+                        }
+                    }
+                }
+            }
         }
     }
 }
